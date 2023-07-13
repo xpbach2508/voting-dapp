@@ -4,7 +4,7 @@ import "bulma/css/bulma.css";
 import Web3 from 'web3'
 import styles from '../styles/Home.module.css'
 import { Inter } from 'next/font/google';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { tokenContractInstance, votingContractInstance } from '@/services/service';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -16,7 +16,17 @@ export default function Home() {
   const [votingContract, setVotingContract] = useState(null);
   const [addressBalance, setAddressBalance] = useState(null);
   const [balance, setBalance] = useState(null);
+  const [amountDeposit, setAmountDeposit] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [countProposal, setCount] = useState(null);
 
+  const updateDescription = (e) => {
+    setDescription(e.target.value);
+  }
+  const updateAmountDeposit = (e) => {
+    setAmountDeposit(e.target.value);
+  }
   const updateAddressBalance = (e) => {
     setAddressBalance(e.target.value);
   }
@@ -49,6 +59,44 @@ export default function Home() {
     setBalance(balance);
   }
 
+  const handleDeposit = async() => {
+    try {
+      await tokenContract.methods.deposit().send({
+        from : address,
+        value: Number(amountDeposit) * 10 ** 18,
+      })
+      
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }
+
+  const handleSubmitProposal = async() => {
+    try {
+      const allowance = await tokenContract.methods.allowance(address, votingContract._address).call();
+      if (Number(web3.utils.fromWei(allowance, "ethers")) < 20) {
+        await tokenContract.methods.approve(votingContract._address, BigInt(20*10 **18)).send({
+          from: address
+        });
+      }
+      await votingContract.methods.createProposal(description).send({
+        from: address
+      })
+    } catch (error) {
+      setErrorMessage(errorMessage);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchData(){
+      if (votingContract) {
+         const proposalCount = await votingContract.methods.proposalCount.call();
+         setCount(Number(proposalCount));
+      }
+    }
+    fetchData();
+  })
+
   return (
     <div className={styles.container}>
       <Head>
@@ -68,6 +116,7 @@ export default function Home() {
             </div>
           </div>
         </nav>
+
         <section>
           <div className='container mt-2'>
             <p>{address}</p>
@@ -87,6 +136,40 @@ export default function Home() {
             <div className='container has-text-success'>
               {balance && <p>Address {addressBalance} has balance = {balance}</p>}
             </div>
+          </div>
+        </section>
+
+        <section>
+          <div className='container'>
+            <div className='field'>
+              <label className='label'>Deposit</label>
+              <div className='control mt-2'>
+                <input onChange={updateAmountDeposit} className='input' type='type' placeholder='Enter deposit amount...'/>
+              </div>
+              <button onClick={handleDeposit} className='button is-primary mt-2'>
+                Deposit
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div className='container'>
+            <div className='field'>
+              <label className='label'>Your community proposal</label>
+              <div className='control mt-2'>
+                <input onChange={updateDescription} className='input' type='type' placeholder='Description...'/>
+              </div>
+              <button onClick={handleSubmitProposal} className='button is-primary mt-2'>
+                Submit proposal
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div className='container has-text-danger'>
+            <p> {errorMessage}</p>
           </div>
         </section>
       </main>
