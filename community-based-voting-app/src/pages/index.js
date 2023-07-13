@@ -14,7 +14,12 @@ export default function Home() {
   const [address, setAddress] = useState(null);
   const [tokenContract, setTokenContract] = useState(null);
   const [votingContract, setVotingContract] = useState(null);
+  const [addressBalance, setAddressBalance] = useState(null);
+  const [balance, setBalance] = useState(null);
 
+  const updateAddressBalance = (e) => {
+    setAddressBalance(e.target.value);
+  }
   const handleConnecttoWallet = async() => {
     if (typeof window !== "undefined" &&
     typeof window.ethereum !== "undefined") {
@@ -38,6 +43,12 @@ export default function Home() {
       alert("Not install Metamask Wallet (Extension)")
     };
   }
+
+  const handleGetBalance = async() => {
+    const balance = await tokenContract.methods.balanceOf(addressBalance).call();
+    setBalance(balance);
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -72,6 +83,9 @@ export default function Home() {
                 </input>
               </div>
               <button onClick={handleGetBalance} className='button is-primary mt-2'>Get balance</button>
+            </div>
+            <div className='container has-text-success'>
+              {balance && <p>Address {addressBalance} has balance = {balance}</p>}
             </div>
           </div>
         </section>
