@@ -5,6 +5,8 @@ import Web3 from 'web3'
 import styles from '../styles/Home.module.css'
 import { Inter } from 'next/font/google';
 import { useEffect, useState } from 'react';
+
+import Proposal from "../components/Proposal";
 import { tokenContractInstance, votingContractInstance } from '@/services/service';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -35,11 +37,11 @@ export default function Home() {
     typeof window.ethereum !== "undefined") {
       try {
         await window.ethereum.request({
-          method: "eth-requestAccounts"
+          method: "eth_requestAccounts"
         })
         const web3Instance = new Web3(window.ethereum);
         setWeb3(web3Instance);
-        const accounts = await web3.eth.getAccounts();
+        const accounts = await web3Instance.eth.getAccounts();
         setAddress(accounts[0]);
         
         const tokenContractIns = tokenContractInstance(web3Instance);
@@ -56,7 +58,7 @@ export default function Home() {
 
   const handleGetBalance = async() => {
     const balance = await tokenContract.methods.balanceOf(addressBalance).call();
-    setBalance(balance);
+    setBalance(web3.utils.fromWei(balance, "ether"));
   }
 
   const handleDeposit = async() => {
@@ -94,7 +96,11 @@ export default function Home() {
          setCount(Number(proposalCount));
       }
     }
-    fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 10000);
+
+    return () => clearInterval(interval);
   })
 
   return (
@@ -164,6 +170,15 @@ export default function Home() {
                 Submit proposal
               </button>
             </div>
+          </div>
+        </section>
+
+        <section>
+          <p>Proposal List:</p>
+          <div>
+            {countProposal && Array.from({length: countProposal}, (_, index) => {
+              <Proposal votingContract={votingContract} address={address} id={index}></Proposal>
+            })}
           </div>
         </section>
 
