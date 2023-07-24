@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity > 0.8.9;
 
 interface IToken {
@@ -36,7 +37,7 @@ contract VotingContract {
     }
 
     function createProposal (string memory _description) public {
-        votingToken.transferFrom(msg.sender, address(this), 20);
+        votingToken.transferFrom(msg.sender, address(this), 20 * 10 ** 18);
         Proposal memory propos = Proposal(
             _description,
             0,
@@ -48,8 +49,8 @@ contract VotingContract {
         emit ECreateProposal(proposalCount);
     }
     
-    function castVote(uint256 proposalId, bool isApprove) public {
-        require(hasVoted[msg.sender][proposalId] == false, "Already voted");
+    function castVote(uint256 proposalId, bool isApprove) public checkProposalEnded(proposalId){
+        require(!hasVoted[msg.sender][proposalId], "Already voted");
         uint256 totalToken = votingToken.balanceOf(msg.sender);
         if (isApprove) {
             proposals[proposalId].yesCount += totalToken;

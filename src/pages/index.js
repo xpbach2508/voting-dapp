@@ -7,6 +7,7 @@ import { Inter } from 'next/font/google';
 import { useEffect, useState } from 'react';
 
 import Proposal from "../components/Proposal";
+import customInputStyle from "../styles/customInputStyle";
 import { tokenContractInstance, votingContractInstance } from '@/services/service';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -76,8 +77,8 @@ export default function Home() {
   const handleSubmitProposal = async() => {
     try {
       const allowance = await tokenContract.methods.allowance(address, votingContract._address).call();
-      if (Number(web3.utils.fromWei(allowance, "ethers")) < 20) {
-        await tokenContract.methods.approve(votingContract._address, BigInt(20*10 **18)).send({
+      if (Number(web3.utils.fromWei(allowance, "ether")) < 20) {
+        await tokenContract.methods.approve(votingContract._address, BigInt(20 * 10 ** 18)).send({
           from: address
         });
       }
@@ -92,7 +93,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchData(){
       if (votingContract) {
-         const proposalCount = await votingContract.methods.proposalCount.call();
+         const proposalCount = await votingContract.methods.proposalCount().call();
          setCount(Number(proposalCount));
       }
     }
@@ -174,11 +175,24 @@ export default function Home() {
         </section>
 
         <section>
-          <p>Proposal List:</p>
-          <div>
-            {countProposal && Array.from({length: countProposal}, (_, index) => {
-              <Proposal votingContract={votingContract} address={address} id={index}></Proposal>
-            })}
+          <div className=" container mb-5">
+            <div className=" field">
+              <label>List Proposal: {countProposal}</label>
+              <div>
+                {countProposal>0 &&
+                  Array.from({ length: countProposal }, (_, index) => {
+                    return (
+                      <Proposal
+                        votingContract={votingContract}
+                        address={address}
+                        id={index}
+                        key={index}
+                        web3={web3}
+                      ></Proposal>
+                    );
+                  })}
+              </div>
+            </div>
           </div>
         </section>
 
