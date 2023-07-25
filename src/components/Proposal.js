@@ -1,13 +1,14 @@
 const { useEffect, useState } = require("react")
 
-const Proposal = ({index, votingContract, address, web3}) => {
+const Proposal = ({id, votingContract, address, web3}) => {
     const [proposalInfo, setInfo] = useState(null);
     const [resultProposal, setResult] = useState(null);
+    const [hasVoted, setVoteState] = useState(null);
     useEffect(()=>{
         async function fetchData(){
-            const proposal = await votingContract.methods.proposals(index).call();
+            const proposal = await votingContract.methods.proposals(id).call();
             setInfo(proposal);
-            const result = await votingContract.methods.resultProposal(index).call();
+            const result = await votingContract.methods.resultProposal(id).call();
             setResult(result);
         }
         const interval = setInterval(() => {
@@ -18,13 +19,14 @@ const Proposal = ({index, votingContract, address, web3}) => {
     })
 
     async function handleVote(value) {
-        await votingContract.methods.castVote(index, value).send({
+        const votingState = await votingContract.methods.castVote(id, value).send({
             from:address,
         })
+        if (votingState) console.log("Already voted");
     }
 
     async function handleFinalize(){
-        await votingContract.methods.finalizeProposal(index).send({
+        await votingContract.methods.finalizeProposal(id).send({
             from: address,
         })
     }
@@ -63,7 +65,7 @@ const Proposal = ({index, votingContract, address, web3}) => {
                     <button disabled={resultProposal!=0 ? true : false} onClick={handleFinalize} className=" button is-primary">
                       Finallize
                     </button>
-                    <p className=" mt-3">{Number(resultProposal)==1 ? "Proposal accepted" : Number(resultProposal)==2 ?"Proposal denied":"" }</p>
+                    <p className=" mt-3">{resultProposal==true ? "Proposal accepted" : resultProposal==false ?"Proposal denied":"" }</p>
                   </>
                 )}
               </div>
