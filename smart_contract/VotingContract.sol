@@ -48,10 +48,14 @@ contract VotingContract {
         proposals.push(propos);
         emit ECreateProposal(proposalCount);
     }
+
+    function hasVotedForProposal(address sender, uint256 proposalId) public view returns (bool) {
+        return hasVoted[sender][proposalId];
+}
+
     
-    function castVote(uint256 proposalId, bool isApprove) public checkProposalEnded(proposalId) returns (bool){
-        if (hasVoted[msg.sender][proposalId]) return true;
-        //require(!hasVoted[msg.sender][proposalId], "Already voted");
+    function castVote(uint256 proposalId, bool isApprove) public checkProposalEnded(proposalId) {
+        require(!hasVoted[msg.sender][proposalId], "Already voted");
         uint256 totalToken = votingToken.balanceOf(msg.sender);
         if (isApprove) {
             proposals[proposalId].yesCount += totalToken;

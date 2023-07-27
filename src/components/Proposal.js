@@ -4,12 +4,15 @@ const Proposal = ({id, votingContract, address, web3}) => {
     const [proposalInfo, setInfo] = useState(null);
     const [resultProposal, setResult] = useState(null);
     const [hasVoted, setVoteState] = useState(null);
+
     useEffect(()=>{
         async function fetchData(){
             const proposal = await votingContract.methods.proposals(id).call();
             setInfo(proposal);
             const result = await votingContract.methods.resultProposal(id).call();
             setResult(result);
+            const votingState = await votingContract.methods.hasVotedForProposal(address, id).call();
+            setVoteState(votingState);
         }
         const interval = setInterval(() => {
             fetchData();
@@ -18,11 +21,11 @@ const Proposal = ({id, votingContract, address, web3}) => {
           return () => clearInterval(interval);
     })
 
+    
     async function handleVote(value) {
-        const votingState = await votingContract.methods.castVote(id, value).send({
+        await votingContract.methods.castVote(id, value).send({
             from:address,
         })
-        if (votingState) console.log("Already voted");
     }
 
     async function handleFinalize(){
@@ -39,6 +42,7 @@ const Proposal = ({id, votingContract, address, web3}) => {
                 {id + 1} === {proposalInfo.description}
               </p>
               <div>
+                {hasVoted ? (<p>Already voted</p>) : (<p>Hasn't voted yet</p>)}
                 {proposalInfo.timestamp >
                 Math.floor(new Date().getTime() / 1000) ? (
                   <div>
@@ -55,9 +59,7 @@ const Proposal = ({id, votingContract, address, web3}) => {
                     >
                       {" "}
                       Disagree :
-                      {Number(
-                        Number(web3.utils.fromWei(proposalInfo.noCount, "ether"))
-                      )}
+                      {Number(web3.utils.fromWei(proposalInfo.noCount, "ether"))}
                     </button>
                   </div>
                 ) : (
