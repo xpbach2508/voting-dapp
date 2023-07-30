@@ -5,7 +5,7 @@ contract VotingToken {
     string public symbol;
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) allowance;
+    mapping(address => mapping(address => uint256)) public allowance;
     mapping (address => uint256) public depositOf;
 
     event Transfer(address _from, address _to, uint256 _value);

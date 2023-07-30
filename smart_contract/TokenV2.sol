@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -10,7 +11,7 @@ contract TokenV2 is ERC20{
     function deposit() payable public {
         depositOf[msg.sender] = msg.value;
         // 0.1eth = 1000 token
-        uint256 totalTokenReceive = (msg.value * 1000) / (0.1 * 10**18);
+        uint256 totalTokenReceive = (msg.value * 1000) / 10;
         _mint(msg.sender, totalTokenReceive);
     }
 }

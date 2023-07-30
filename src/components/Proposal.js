@@ -42,10 +42,31 @@ const Proposal = ({id, votingContract, address, web3}) => {
                 {id + 1} === {proposalInfo.description}
               </p>
               <div>
-                {hasVoted ? (<p>Already voted</p>) : (<p>Hasn't voted yet</p>)}
                 {proposalInfo.timestamp >
                 Math.floor(new Date().getTime() / 1000) ? (
-                  <div>
+                  <div> 
+                    {hasVoted ? (
+                        <div>
+                          <p>Already voted</p>
+                          <button
+                            
+                            className=" button is-primary mt-3 mr-5"
+                          >
+                            Agree: {" "}
+                            {Number(web3.utils.fromWei(proposalInfo.yesCount, "ether"))}
+                          </button>
+                          <button
+                            
+                            className=" button is-primary mt-3"
+                          >
+                            {" "}
+                            Disagree: 
+                            {Number(web3.utils.fromWei(proposalInfo.noCount, "ether"))}
+                          </button>
+                        </div>
+                        
+                    ) :
+                   (<div>
                     <button
                       onClick={() => handleVote(true)}
                       className=" button is-primary mt-3 mr-5"
@@ -61,13 +82,14 @@ const Proposal = ({id, votingContract, address, web3}) => {
                       Disagree :
                       {Number(web3.utils.fromWei(proposalInfo.noCount, "ether"))}
                     </button>
+                  </div>)}
                   </div>
                 ) : (
                   <>
-                    <button disabled={resultProposal!=0 ? true : false} onClick={handleFinalize} className=" button is-primary">
-                      Finallize
+                    <button disabled={(resultProposal!=0) ? true : false} onClick={handleFinalize} className=" button is-primary">
+                      Finalize
                     </button>
-                    <p className=" mt-3">{resultProposal==true ? "Proposal accepted" : resultProposal==false ?"Proposal denied":"" }</p>
+                    <p className=" mt-3">{Number(resultProposal)==1 ? "Proposal accepted" : Number(resultProposal)==2 ?"Proposal denied":"" }</p>
                   </>
                 )}
               </div>

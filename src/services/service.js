@@ -10,6 +10,6 @@ export const tokenContractInstance = (web3) => {
 export const votingContractInstance = (web3) => {
     return new web3.eth.Contract(
         VotingContract.abi,
-        "0x59Bc1d751D6c2b0fbe9bDf651B6C1e6Ea105848E"
+        "0x4b98bb722785faD57818F0B5214681c813D34b19"
     )
 }
