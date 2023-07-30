@@ -2,7 +2,7 @@ const { useEffect, useState } = require("react")
 
 const Proposal = ({id, votingContract, address, web3}) => {
     const [proposalInfo, setInfo] = useState(null);
-    const [resultProposal, setResult] = useState(null);
+    const [resultProposal, setResult] = useState(0);
     const [hasVoted, setVoteState] = useState(null);
 
     useEffect(()=>{

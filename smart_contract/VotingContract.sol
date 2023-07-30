@@ -20,11 +20,11 @@ contract VotingContract {
     Proposal[] public proposals;
     uint256 public proposalCount;
     mapping(address => mapping(uint256 => bool)) private hasVoted;
-    mapping(uint256 => bool) public resultProposal;
+    mapping(uint256 => uint256) public resultProposal;
 
     event ECreateProposal(uint256);
     event CastVote(address, uint256);
-    event EFinalize(uint256, bool);
+    event EFinalize(uint256, uint256);
 
     modifier checkProposalEnded(uint256 proposalId) {
         require(block.timestamp < proposals[proposalId].timestamp, "Proposal is ended");
@@ -42,7 +42,7 @@ contract VotingContract {
             _description,
             0,
             0,
-            block.timestamp + 3 days
+            block.timestamp + 1 minutes
         );
         ++proposalCount;
         proposals.push(propos);
@@ -73,9 +73,9 @@ contract VotingContract {
         uint256 totalSupply = votingToken.totalSupply();
         uint256 totalYesVoted = yesCount / totalSupply * 100;
         if (totalYesVoted > 50) {
-            resultProposal[proposalId] = true;
+            resultProposal[proposalId] = 1;
         } else {
-            resultProposal[proposalId] = false;
+            resultProposal[proposalId] = 2;
         }
         emit EFinalize(proposalId, resultProposal[proposalId]);
     }
