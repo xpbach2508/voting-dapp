@@ -4,12 +4,12 @@ import VotingContract from '../abi/VotingContract.json'
 export const tokenContractInstance = (web3) => {
     return new web3.eth.Contract(
         TokenContract.abi,
-        "0x590e5Fe63d037dd37ebe7b5e6F63579A38F451aE"
+        "0x94C90f2Ce2E06D93f2874280c0dD6BFDD43748DB"
     )
 }
 export const votingContractInstance = (web3) => {
     return new web3.eth.Contract(
         VotingContract.abi,
-        "0x4b98bb722785faD57818F0B5214681c813D34b19"
+        "0x155cCc5D0df60b6Db62E00A50119a95edA6d65ae"
     )
 }
