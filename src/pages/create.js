@@ -1,6 +1,7 @@
 
 'use client'
 import { useEffect, useState } from "react";
+import Head from 'next/head';
 
 import Web3 from "web3";
 import {
@@ -12,11 +13,12 @@ import NavBar from '@/components/NavBar';
 import { useConnection } from "@/services/ConnectionContext";
 
 export default function Home() {
-  const [web3, setWeb3] = useState(null);
-  //const [address, setAddress] = useState(null);
-  const [tokenContract, setTokenContract] = useState(null);
-  const [votingContract, setVotingContract] = useState(null);
-  const { isConnected, setIsConnected , address, setAddress, balance, setBalance} = useConnection();
+  const { isConnected, setIsConnected , 
+    address, setAddress, 
+    balance, setBalance, 
+    votingContract, setVotingContract,
+    tokenContract, setTokenContract,
+    web3, setWeb3} = useConnection();
 
 
   const [errorMessage, setErrorMessage] = useState(null);
@@ -51,6 +53,7 @@ export default function Home() {
 
 
   const updateDescription = (e) => {
+    if (e && e.target)
     setDescription(e.target.value);
   };
 
@@ -72,6 +75,11 @@ export default function Home() {
 
   return isConnected ? (
     <>
+    <Head>
+      <title>Create proposal</title>
+      <meta name="description" content="Create community proposal" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
     <NavBar 
     handleConnecttoWallet={handleConnecttoWallet}
     />
@@ -95,6 +103,11 @@ export default function Home() {
     </>
   ) : (
     <>
+      <Head>
+        <title>Create</title>
+        <meta name="description" content="Create community proposal" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar 
         handleConnecttoWallet={handleConnecttoWallet}
     />

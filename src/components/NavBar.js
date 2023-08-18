@@ -13,7 +13,12 @@ import { useConnection } from "@/services/ConnectionContext";
 
 
 export default function NavBar({handleConnecttoWallet}) {
-  const { isConnected, setIsConnected , address, setAddress, balance, setBalance} = useConnection();
+  const { isConnected, setIsConnected , 
+    address, setAddress, 
+    balance, setBalance, 
+    votingContract, setVotingContract,
+    tokenContract, setTokenContract,
+    web3, setWeb3} = useConnection();
 
   const ConnecttoWallet = () => {
     handleConnecttoWallet();
@@ -32,7 +37,7 @@ export default function NavBar({handleConnecttoWallet}) {
       <div className="navbar-menu" id="nav-links">
         <div className="navbar-start">
           <Link href="/" className="navbar-item">Home</Link>
-          <Link href="/checkbalance" className="navbar-item">Check Balance</Link>
+          <Link href="/checkbalance" className="navbar-item">Balance</Link>
           <Link href="/create" className="navbar-item">Create</Link>
           <Link href="/deposit" className="navbar-item">Deposit</Link>
         </div>

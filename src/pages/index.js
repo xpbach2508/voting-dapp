@@ -14,15 +14,15 @@ import { useConnection } from '@/services/ConnectionContext';
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
-  const [web3, setWeb3] = useState(null);
+  //const [web3, setWeb3] = useState(null);
   //const [address, setAddress] = useState(null);
-  const { isConnected, setIsConnected , address, setAddress, balance, setBalance} = useConnection();
-
-  const [tokenContract, setTokenContract] = useState(null);
-  const [votingContract, setVotingContract] = useState(null);
-  const [amountDeposit, setAmountDeposit] = useState(null);
+  const { isConnected, setIsConnected , 
+    address, setAddress, 
+    balance, setBalance, 
+    votingContract, setVotingContract,
+    tokenContract, setTokenContract,
+    web3, setWeb3} = useConnection();
   const [errorMessage, setErrorMessage] = useState(null);
-  const [description, setDescription] = useState(null);
   const [countProposal, setCount] = useState(null);
 
 

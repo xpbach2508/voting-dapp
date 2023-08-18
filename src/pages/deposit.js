@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import Head from 'next/head';
 
 import Web3 from "web3";
 import {
@@ -12,14 +13,18 @@ import { useConnection } from "@/services/ConnectionContext";
 import NavBar from '@/components/NavBar';
 
 export default function Home() {
-  const [web3, setWeb3] = useState(null);
-  const [tokenContract, setTokenContract] = useState(null);
   const [amountDeposit, setAmountDeposit] = useState(null);
-  const { isConnected, setIsConnected , address, setAddress, balance, setBalance} = useConnection();
+  const { isConnected, setIsConnected , 
+    address, setAddress, 
+    balance, setBalance, 
+    votingContract, setVotingContract,
+    tokenContract, setTokenContract,
+    web3, setWeb3} = useConnection();
 
   const [errorMessage, setErrorMessage] = useState(null);
 
   const updateAmountDeposit = (e) => {
+    if (e && e.target)
     setAmountDeposit(e.target.value);
   }
 
@@ -40,8 +45,8 @@ export default function Home() {
         setTokenContract(tokenContractIns);
         const votingContractIns = votingContractInstance(web3Instance);
         setVotingContract(votingContractIns);
-        const balance = await tokenContract.methods.balanceOf(address).call();
-        setBalance(web3.utils.fromWei(balance, "ether"));
+        const balanceChecked = await tokenContract.methods.balanceOf(address).call();
+        setBalance(web3.utils.fromWei(balanceChecked, "ether"));
       } catch (error) {
         console.log(error);
       }
@@ -61,28 +66,41 @@ export default function Home() {
     } catch (error) {
       setErrorMessage(error.message);
     }
-    const balance = await tokenContract.methods.balanceOf(address).call();
-    setBalance(web3.utils.fromWei(balance, "ether"));
   }
   const updateBalance = async() =>{
-    const balance = await tokenContract.methods.balanceOf(address).call();
-    setBalance(web3.utils.fromWei(balance, "ether"));
-    return balance;
+    const balanceChecked = await tokenContract.methods.balanceOf("0x09cB1ae3d95AAcbbD7Fc5314EFBB474aaABd736f").call();
+    setBalance(web3.utils.fromWei(balanceChecked, "ether"));
   }
+
+  useEffect(() => {
+    async function fetchData(){
+         updateBalance();
+    }
+    const interval = setInterval(() => {
+      fetchData();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  })
 
   return isConnected ? (
     <>
+       <Head>
+        <title>Deposit</title>
+        <meta name="description" content="Deposit COM" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar 
         handleConnecttoWallet={handleConnecttoWallet}
       />
       <main className="container">
         <section className="my-5" >
-            <p>Your balance: {updateBalance} COM (Community Token)</p>
+            <p>Your balance: {balance} COM (Community Token)</p>
         </section>
 
         <section>
           <div className=" field my-5">
-            <label className=" lable">Enter your amoutn of KLAY you want to deposit (0.1 KLAY = 1000 COM)</label>
+            <label className=" lable">Enter your amount of KLAY you want to deposit (0.1 KLAY = 10000 COM)</label>
             <div className=" controle mt-2">
               <input onChange={updateAmountDeposit} className=" input" type=" type" placeholder=" Enter a number..."/>
             </div>
@@ -99,6 +117,11 @@ export default function Home() {
     </>
   ) : (
     <>
+       <Head>
+        <title>Deposit</title>
+        <meta name="description" content="Deposit COM" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar 
         handleConnecttoWallet={handleConnecttoWallet}
       />

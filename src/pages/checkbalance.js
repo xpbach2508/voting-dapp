@@ -1,6 +1,7 @@
 
 'use client'
 import { useEffect, useState } from "react";
+import Head from 'next/head';
 
 import Web3 from "web3";
 import {
@@ -12,14 +13,16 @@ import NavBar from '@/components/NavBar';
 import { useConnection } from "@/services/ConnectionContext";
 
 export default function Home() {
-  const [web3, setWeb3] = useState(null);
   //const [address, setAddress] = useState(null);
-  const [tokenContract, setTokenContract] = useState(null);
-  const [votingContract, setVotingContract] = useState(null);
   const [addressBalance, setAddressBalance] = useState(null);
   const [balanceOther, setBalanceOther] = useState(null);
 
-  const { isConnected, setIsConnected , address, setAddress, balance, setBalance} = useConnection();
+  const { isConnected, setIsConnected , 
+    address, setAddress, 
+    balance, setBalance, 
+    votingContract, setVotingContract,
+    tokenContract, setTokenContract,
+    web3, setWeb3} = useConnection();
 
 
   const [errorMessage, setErrorMessage] = useState(null);
@@ -53,16 +56,33 @@ export default function Home() {
 
 
   const updateAddressBalance = (e) => {
+    if (e && e.target)
     setAddressBalance(e.target.value);
   }
 
   const handleGetBalance = async() => {
-    const balance = await tokenContract.methods.balanceOf(addressBalance).call();
-    setBalanceOther(web3.utils.fromWei(balanceOther, "ether"));
+    const balanceChecked = await tokenContract.methods.balanceOf(addressBalance).call();
+    setBalanceOther(web3.utils.fromWei(balanceChecked, "ether"));
   };
+
+  useEffect(() => {
+    async function fetchData(){
+         updateAddressBalance();
+    }
+    const interval = setInterval(() => {
+      fetchData();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  })
 
   return isConnected ? (
     <>
+    <Head>
+      <title>Check Balance</title>
+      <meta name="description" content="Voting with ease" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
     <NavBar 
     handleConnecttoWallet={handleConnecttoWallet}
     />
@@ -93,6 +113,11 @@ export default function Home() {
     </>
   ) : (
     <>
+      <Head>
+        <title>Check Balance</title>
+        <meta name="description" content="Voting with ease" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar 
         handleConnecttoWallet={handleConnecttoWallet}
     />
